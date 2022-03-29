@@ -20,7 +20,7 @@ function Home({ passengers, getPassengersDispatch, getAllPagesDispatch, getPasse
         getPassengersDispatch(res.data);
         getAllPagesDispatch(res.totalPassengers, res.totalPages);
       });
-  }, [getPassengersDispatch, getAllPagesDispatch])
+  }, [passengers])
 
   // console.log(totalPage.totalPages);
 
