@@ -15,15 +15,15 @@ function Details({ passenger }) {
     )
   } else {
     return (
-      <Layout>
+      <Layout title="DETAILS">
         <Container>
           <Link href="/">
-            <a>Back</a>
+            <a className="btn btn-secondary mt-3">Back</a>
           </Link>
           <Card className="my-5">
             <Card.Body>
-              <Card.Text>{passenger.name}</Card.Text>
-              <Card.Text>{passenger.trips}</Card.Text>
+              <Card.Text>Name : {passenger.name}</Card.Text>
+              <Card.Text>Trips : {passenger.trips}</Card.Text>
             </Card.Body>
             <Row>
               {passenger.airline.map(people =>

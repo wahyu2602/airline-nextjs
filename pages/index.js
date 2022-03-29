@@ -5,24 +5,30 @@ import { useEffect, useState } from 'react'
 import { getPagePassenger, getPassengers } from '../lib/services/passenger'
 import Link from "next/link";
 import { connect } from "react-redux";
-import { getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch } from '../lib/redux/dispatch'
+import { getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, getPageSizeDispatch } from '../lib/redux/dispatch'
 
 
-function Home({ passengers, getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, setTotalPages }) {
+function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, setTotalPages, getPageSizeDispatch, setPageSize }) {
   const [pagination, setPanigation] = useState({
     page: 0,
     size: 10
   });
 
   useEffect(() => {
-    getPassengers()
-      .then((res) => {
-        getPassengersDispatch(res.data);
-        getAllPagesDispatch(res.totalPassengers, res.totalPages);
+    if (passenger == null) {
+      getPassengers()
+        .then((res) => {
+          getPassengersDispatch(res.data);
+          getAllPagesDispatch(res.totalPassengers, res.totalPages - 1);
+        });
+    }
+    if (setPageSize.page !== null || setPageSize.size !== null) {
+      setPanigation({
+        page: setPageSize.page,
+        size: setPageSize.size
       });
-  });
-
-  // console.log(totalPage.totalPages);
+    }
+  }, [getPassengersDispatch, getAllPagesDispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,27 +48,32 @@ function Home({ passengers, getPassengersDispatch, getAllPagesDispatch, getPasse
       .then((res) => {
         getPassengersDispatch(res.data);
       });
+    getPageSizeDispatch(pagination.page, pagination.size);
   };
 
   return (
     <>
       <Layout title="HOME">
         <Container className="my-5">
-          <Row className="mb-5">
-            <Col md={2}>
-              <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit}>
+            <Row className="mb-5">
+              <Col md={2}>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                  <Form.Label>Page : {setTotalPages.totalPages - 1}</Form.Label>
+                  <Form.Label>Page : {setTotalPages.totalPages}</Form.Label>
                   <Form.Control name="page" type="number" onChange={handleChange} value={pagination.page} />
                 </Form.Group>
+              </Col>
+              <Col md={2}>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput2">
                   <Form.Label>Size : {setTotalPages.totalPassengers}</Form.Label>
                   <Form.Control name="size" type="number" onChange={handleChange} value={pagination.size} />
                 </Form.Group>
+              </Col>
+              <Col md={2} className="d-flex align-items-center mt-3">
                 <Button type="sumbit" variant="success">Select</Button>
-              </Form>
-            </Col>
-          </Row>
+              </Col>
+            </Row>
+          </Form>
           <Table striped bordered hover responsive>
             <thead>
               <tr>
@@ -120,7 +131,9 @@ function Home({ passengers, getPassengersDispatch, getAllPagesDispatch, getPasse
 const mapStateToProps = (state) => {
   return {
     passengers: state.passengers,
-    setTotalPages: state.setTotalPages
+    setTotalPages: state.setTotalPages,
+    passenger: state.passenger,
+    setPageSize: state.setPageSize
   }
 }
 
@@ -128,7 +141,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getPassengersDispatch: (passengers) => dispatch(getPassengersDispatch(passengers)),
     getAllPagesDispatch: (totalPassengers, totalPages) => dispatch(getAllPagesDispatch(totalPassengers, totalPages)),
-    getPassengerIdDispatch: (id) => dispatch(getPassengerIdDispatch(id))
+    getPassengerIdDispatch: (id) => dispatch(getPassengerIdDispatch(id)),
+    getPageSizeDispatch: (page, size) => dispatch(getPageSizeDispatch(page, size))
   }
 }
 
