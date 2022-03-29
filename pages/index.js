@@ -52,7 +52,7 @@ function Home({ passengers, getPassengersDispatch, getAllPagesDispatch, getPasse
             <Col md={2}>
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
-                  <Form.Label>Page : {setTotalPages.totalPages}</Form.Label>
+                  <Form.Label>Page : {setTotalPages.totalPages - 1}</Form.Label>
                   <Form.Control name="page" type="number" onChange={handleChange} value={pagination.page} />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput2">
