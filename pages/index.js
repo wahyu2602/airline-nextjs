@@ -1,21 +1,22 @@
 import Layout from "../components/layout/layout.component"
-import { Container, Col, Row, Table, Form, Button } from "react-bootstrap"
+import { Container, Col, Row, Table, Form, Button, Spinner, InputGroup, FormControl } from "react-bootstrap"
 // import { axios } from "../lib/axios/axios";
 import { useEffect, useState } from 'react'
 import { getPagePassenger, getPassengers } from '../lib/services/passenger'
 import Link from "next/link";
 import { connect } from "react-redux";
-import { getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, getPageSizeDispatch } from '../lib/redux/dispatch'
+import { getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, getPageSizeDispatch, setConditionStaticDispatch, filterPassengersDispatch } from '../lib/redux/dispatch'
 
 
-function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, setTotalPages, getPageSizeDispatch, setPageSize }) {
+function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, setTotalPages, getPageSizeDispatch, setPageSize, setConditionStaticDispatch, conditionStatic, filterPassengersDispatch, filterPassengers }) {
+  const [buttonProcess, setButtonProcess] = useState(false);
   const [pagination, setPanigation] = useState({
     page: 0,
     size: 10
   });
 
   useEffect(() => {
-    if (passenger == null) {
+    if (!conditionStatic && passenger === null) {
       getPassengers()
         .then((res) => {
           getPassengersDispatch(res.data);
@@ -28,12 +29,12 @@ function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatc
         size: setPageSize.size
       });
     }
-  }, [getPassengersDispatch, getAllPagesDispatch]);
+  }, [conditionStatic, passenger, setPageSize, setPanigation, getPassengersDispatch, getAllPagesDispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (value < 0) {
-      return;
+      return 0;
     } else {
       setPanigation((pagination) => ({
         ...pagination,
@@ -44,36 +45,73 @@ function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatc
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setButtonProcess(true);
     getPagePassenger(pagination.page, pagination.size)
       .then((res) => {
         getPassengersDispatch(res.data);
+        setConditionStaticDispatch(true);
+        setButtonProcess(false);
+        getPageSizeDispatch(pagination.page, pagination.size);
       });
-    getPageSizeDispatch(pagination.page, pagination.size);
   };
+
+  const handleFilter = (e) => {
+    const lengthValue = e.target.value.length
+    if (lengthValue <= 1) {
+      filterPassengersDispatch(null, false);
+    } else {
+      filterPassengersDispatch(e.target.value, true);
+    }
+  }
 
   return (
     <>
       <Layout title="HOME">
         <Container className="my-5">
           <Form onSubmit={handleSubmit}>
-            <Row className="mb-5">
-              <Col md={2}>
+            <Row className="mb-4">
+              <Col md={3}>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                   <Form.Label>Page : {setTotalPages.totalPages}</Form.Label>
                   <Form.Control name="page" type="number" onChange={handleChange} value={pagination.page} />
                 </Form.Group>
               </Col>
-              <Col md={2}>
+              <Col md={3}>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput2">
-                  <Form.Label>Size : {setTotalPages.totalPassengers}</Form.Label>
+                  <Form.Label>Show Data : {setTotalPages.totalPassengers}</Form.Label>
                   <Form.Control name="size" type="number" onChange={handleChange} value={pagination.size} />
                 </Form.Group>
               </Col>
-              <Col md={2} className="d-flex align-items-center mt-3">
-                <Button type="sumbit" variant="success">Select</Button>
-              </Col>
+              {buttonProcess ?
+                <Col md={3} className="d-flex align-items-center mt-3">
+                  <Button variant="secondary" disabled>
+                    <Spinner
+                      as="span"
+                      animation="grow"
+                      size="sm"
+                      role="status"
+                      aria-hidden="true"
+                    />
+                    Loading...
+                  </Button>
+                </Col>
+                :
+                <Col md={2} className="d-flex align-items-center mt-3">
+                  <Button type="sumbit" variant="success">Select</Button>
+                </Col>
+              }
             </Row>
           </Form>
+          <Col md={3}>
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="basic-addon1">Filter</InputGroup.Text>
+              <FormControl
+                placeholder="Name"
+                aria-describedby="basic-addon1"
+                onChange={handleFilter}
+              />
+            </InputGroup>
+          </Col>
           <Table striped bordered hover responsive>
             <thead>
               <tr>
@@ -84,20 +122,46 @@ function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatc
               </tr>
             </thead>
             <tbody>
-              {passengers.map((item, index) => {
-                return (
-                  <tr key={item._id}>
-                    <td>{index + 1}</td>
-                    <td>{item.name}</td>
-                    <td>{item.trips}</td>
-                    <td>
-                      <Link href="/passenger/details">
-                        <a className="btn btn-primary btn-sm" onClick={(e) => getPassengerIdDispatch(item._id)}>Details</a>
-                      </Link>
-                    </td>
-                  </tr>
-                )
-              })}
+              {passengers.length == 0 ?
+                <tr>
+                  <td colSpan={4}>
+                    <div className="d-flex justify-content-center">
+                      <Spinner animation="border" variant="warning" />
+                    </div>
+                  </td>
+                </tr>
+                :
+                filterPassengers.conditionFilter ?
+                  filterPassengers.data.map((item, index) => {
+                    return (
+                      <tr key={item._id}>
+                        <td>{index + 1}</td>
+                        <td>{item.name}</td>
+                        <td>{item.trips}</td>
+                        <td>
+                          <Link href="/passenger/details">
+                            <a className="btn btn-primary btn-sm" onClick={(e) => getPassengerIdDispatch(item._id)}>Details</a>
+                          </Link>
+                        </td>
+                      </tr>
+                    )
+                  })
+                  :
+                  passengers.map((item, index) => {
+                    return (
+                      <tr key={item._id}>
+                        <td>{index + 1}</td>
+                        <td>{item.name}</td>
+                        <td>{item.trips}</td>
+                        <td>
+                          <Link href="/passenger/details">
+                            <a className="btn btn-primary btn-sm" onClick={(e) => getPassengerIdDispatch(item._id)}>Details</a>
+                          </Link>
+                        </td>
+                      </tr>
+                    )
+                  })
+              }
             </tbody>
           </Table>
         </Container>
@@ -133,7 +197,9 @@ const mapStateToProps = (state) => {
     passengers: state.passengers,
     setTotalPages: state.setTotalPages,
     passenger: state.passenger,
-    setPageSize: state.setPageSize
+    setPageSize: state.setPageSize,
+    conditionStatic: state.conditionStatic,
+    filterPassengers: state.filterPassengers
   }
 }
 
@@ -142,7 +208,9 @@ const mapDispatchToProps = (dispatch) => {
     getPassengersDispatch: (passengers) => dispatch(getPassengersDispatch(passengers)),
     getAllPagesDispatch: (totalPassengers, totalPages) => dispatch(getAllPagesDispatch(totalPassengers, totalPages)),
     getPassengerIdDispatch: (id) => dispatch(getPassengerIdDispatch(id)),
-    getPageSizeDispatch: (page, size) => dispatch(getPageSizeDispatch(page, size))
+    getPageSizeDispatch: (page, size) => dispatch(getPageSizeDispatch(page, size)),
+    setConditionStaticDispatch: (bolean) => dispatch(setConditionStaticDispatch(bolean)),
+    filterPassengersDispatch: (name, bolean) => dispatch(filterPassengersDispatch(name, bolean))
   }
 }
 

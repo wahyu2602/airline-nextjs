@@ -5,7 +5,7 @@ export default function NavBar() {
   return (
     <Navbar bg="warning" expand="lg" variant="light">
       <Container>
-        <Link href="/">
+        <Link href="/" passHref>
           <Navbar.Brand href="/" className="fw-bold">
             AppAirLine
           </Navbar.Brand>
@@ -13,10 +13,10 @@ export default function NavBar() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
-            <Link href="/">
+            <Link href="/" passHref>
               <Nav.Link href="/">Home</Nav.Link>
             </Link>
-            <Link href="/login">
+            <Link href="/login" passHref>
               <Nav.Link href="/login">Login</Nav.Link>
             </Link>
           </Nav>
