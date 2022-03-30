@@ -28,7 +28,7 @@ function Details({ passenger }) {
             </Card.Body>
             <Row>
               {passenger.airline.map(people =>
-                <Col key={people._id} lg={4}>
+                <Col key={people._id} md={4}>
                   <Card>
                     <Card.Img variant="top" src={people.logo} alt={people.name} />
                     <Card.Body>

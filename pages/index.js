@@ -109,6 +109,7 @@ function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatc
                 placeholder="Name"
                 aria-describedby="basic-addon1"
                 onChange={handleFilter}
+                defaultValue={filterPassengers.valueName == null ? '' : filterPassengers.valueName}
               />
             </InputGroup>
           </Col>
