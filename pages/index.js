@@ -123,6 +123,7 @@ function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatc
               </tr>
             </thead>
             <tbody>
+              {/* this is if/else hell and this not good */}
               {passengers.length == 0 ?
                 <tr>
                   <td colSpan={4}>
@@ -133,20 +134,29 @@ function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatc
                 </tr>
                 :
                 filterPassengers.conditionFilter ?
-                  filterPassengers.data.map((item, index) => {
-                    return (
-                      <tr key={item._id}>
-                        <td>{index + 1}</td>
-                        <td>{item.name}</td>
-                        <td>{item.trips}</td>
-                        <td>
-                          <Link href="/passenger/details">
-                            <a className="btn btn-primary btn-sm" onClick={(e) => getPassengerIdDispatch(item._id)}>Details</a>
-                          </Link>
-                        </td>
-                      </tr>
-                    )
-                  })
+                  filterPassengers.data.length == 0 ?
+                    <tr>
+                      <td colSpan={4}>
+                        <div className="d-flex justify-content-center">
+                          {filterPassengers.valueName} not found!
+                        </div>
+                      </td>
+                    </tr>
+                    :
+                    filterPassengers.data.map((item, index) => {
+                      return (
+                        <tr key={item._id}>
+                          <td>{index + 1}</td>
+                          <td>{item.name}</td>
+                          <td>{item.trips}</td>
+                          <td>
+                            <Link href="/passenger/details">
+                              <a className="btn btn-primary btn-sm" onClick={(e) => getPassengerIdDispatch(item._id)}>Details</a>
+                            </Link>
+                          </td>
+                        </tr>
+                      )
+                    })
                   :
                   passengers.map((item, index) => {
                     return (
