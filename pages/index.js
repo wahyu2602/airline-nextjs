@@ -29,18 +29,21 @@ function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatc
         size: setPageSize.size
       });
     }
-  }, [conditionStatic, passenger, setPageSize, setPanigation, getPassengersDispatch, getAllPagesDispatch]);
+  }, [conditionStatic, passenger, setPageSize, getPassengersDispatch, getAllPagesDispatch, setPanigation]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (value < 0) {
-      return 0;
-    } else {
-      setPanigation((pagination) => ({
-        ...pagination,
-        [name]: Number(value)
-      }));
+    // validation
+    if ([name] == 'page' && value !== '' && value < 0) {
+      return e.target.value = 0;
     }
+    if ([name] == 'size' && value !== '' && value < 1) {
+      return e.target.value = 1;
+    }
+    setPanigation(() => ({
+      page: [name] == 'page' ? [value] < 0 && [value] !== '' ? 0 : Number([value]) : pagination.page,
+      size: [name] == 'size' ? [value] < 1 && [value] !== '' ? 1 : Number([value]) : pagination.size
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -73,13 +76,13 @@ function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatc
               <Col md={3}>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
                   <Form.Label>Page : {setTotalPages.totalPages}</Form.Label>
-                  <Form.Control name="page" type="number" onChange={handleChange} value={pagination.page} />
+                  <Form.Control name="page" type="number" onChange={handleChange} defaultValue={setPageSize.page == null ? pagination.page : setPageSize.page} required />
                 </Form.Group>
               </Col>
               <Col md={3}>
                 <Form.Group className="mb-3" controlId="exampleForm.ControlInput2">
                   <Form.Label>Show Data : {setTotalPages.totalPassengers}</Form.Label>
-                  <Form.Control name="size" type="number" onChange={handleChange} value={pagination.size} />
+                  <Form.Control name="size" type="number" onChange={handleChange} defaultValue={setPageSize.size == null ? pagination.size : setPageSize.size} required />
                 </Form.Group>
               </Col>
               {buttonProcess ?

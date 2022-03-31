@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { connect } from 'react-redux';
 
 function Details({ passenger }) {
-  console.log(passenger);
   if (passenger == null) {
     return (
       <Layout>
