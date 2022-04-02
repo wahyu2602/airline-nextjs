@@ -5,10 +5,11 @@ import { useEffect, useState } from 'react'
 import { getPagePassenger, getPassengers } from '../lib/services/passenger'
 import Link from "next/link";
 import { connect } from "react-redux";
-import { getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, getPageSizeDispatch, setConditionStaticDispatch, filterPassengersDispatch } from '../lib/redux/dispatch'
+import { getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, getPageSizeDispatch, setConditionStaticDispatch, filterPassengersDispatch, statusLoginDispatch } from '../lib/redux/dispatch'
+import cookies from "next-cookies";
 
 
-function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, setTotalPages, getPageSizeDispatch, setPageSize, setConditionStaticDispatch, conditionStatic, filterPassengersDispatch, filterPassengers }) {
+function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, setTotalPages, getPageSizeDispatch, setPageSize, setConditionStaticDispatch, conditionStatic, filterPassengersDispatch, filterPassengers, statusLoginDispatch }) {
   const [buttonProcess, setButtonProcess] = useState(false);
   const [pagination, setPanigation] = useState({
     page: 0,
@@ -29,7 +30,12 @@ function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatc
         size: setPageSize.size
       });
     }
-  }, [conditionStatic, passenger, setPageSize, getPassengersDispatch, getAllPagesDispatch, setPanigation]);
+    if (cookie.Bearer === undefined) {
+      statusLoginDispatch(false);
+    } else {
+      statusLoginDispatch(true);
+    }
+  }, [cookie, statusLoginDispatch, conditionStatic, passenger, setPageSize, getPassengersDispatch, getAllPagesDispatch, setPanigation]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -184,27 +190,10 @@ function Home({ passengers, passenger, getPassengersDispatch, getAllPagesDispatc
   )
 }
 
-// export async function getServerSideProps() {
-//   const data = await axios.get('api/passengers')
-//     .then((res) => {
-//       return res.data;
-//     })
-//     .catch((err) => {
-//       return err.response.data
-//     })
-//   return { props: { data } }
-// }
-
-// Home.getInitialProps = async (ctx) => {
-//   const data = await axios.get('api/passengers')
-//     .then((res) => {
-//       return res.data;
-//     })
-//     .catch((err) => {
-//       return err.response.data
-//     })
-//   return { data: data }
-// };
+export async function getServerSideProps(context) {
+  let cookie = cookies(context)
+  return { props: { cookie } }
+}
 
 const mapStateToProps = (state) => {
   return {
@@ -213,7 +202,7 @@ const mapStateToProps = (state) => {
     passenger: state.passenger,
     setPageSize: state.setPageSize,
     conditionStatic: state.conditionStatic,
-    filterPassengers: state.filterPassengers
+    filterPassengers: state.filterPassengers,
   }
 }
 
@@ -224,7 +213,8 @@ const mapDispatchToProps = (dispatch) => {
     getPassengerIdDispatch: (id) => dispatch(getPassengerIdDispatch(id)),
     getPageSizeDispatch: (page, size) => dispatch(getPageSizeDispatch(page, size)),
     setConditionStaticDispatch: (bolean) => dispatch(setConditionStaticDispatch(bolean)),
-    filterPassengersDispatch: (name, bolean) => dispatch(filterPassengersDispatch(name, bolean))
+    filterPassengersDispatch: (name, bolean) => dispatch(filterPassengersDispatch(name, bolean)),
+    statusLoginDispatch: (bolean) => dispatch(statusLoginDispatch(bolean))
   }
 }
 

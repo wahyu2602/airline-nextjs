@@ -2,9 +2,13 @@ import Layout from "../components/layout/layout.component"
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import Link from "next/link";
 import { useState } from "react";
-import { loginAuth } from '../lib/auth/login';
+import { loginAuth } from '../lib/auth';
+import { useRouter } from 'next/router';
+import { connect } from 'react-redux';
+import { statusLoginDispatch } from '../lib/redux/dispatch';
 
-function Login() {
+function Login({ statusLoginDispatch }) {
+  const route = useRouter();
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -21,7 +25,9 @@ function Login() {
   const handleSumbitLogin = (e) => {
     e.preventDefault();
     loginAuth(formData).then((res) => {
-      console.log(res);
+      document.cookie = `${res.token_type}=${res.access_token}; path=/; expires=${res.expires_in}`;
+      route.push('/dashboard');
+      statusLoginDispatch(true);
     });
   };
 
@@ -57,4 +63,10 @@ function Login() {
   )
 }
 
-export default Login;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    statusLoginDispatch: (bolean) => dispatch(statusLoginDispatch(bolean)),
+  }
+}
+
+export default connect(null, mapDispatchToProps)(Login);

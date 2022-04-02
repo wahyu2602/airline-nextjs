@@ -1,7 +1,20 @@
-import { Navbar, Container, Nav } from "react-bootstrap"
-import Link from "next/link"
+import { Navbar, Container, Nav } from "react-bootstrap";
+import Link from "next/link";
+import { logoutAuth } from '../../lib/auth';
+import { useRouter } from 'next/router';
+import { connect } from 'react-redux';
 
-export default function NavBar() {
+
+function NavBar({ auth }) {
+  const route = useRouter();
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    logoutAuth().then((res) => {
+      route.push('/');
+    });
+  }
+
   return (
     <Navbar bg="warning" expand="lg" variant="light">
       <Container>
@@ -16,12 +29,29 @@ export default function NavBar() {
             <Link href="/" passHref>
               <Nav.Link href="/">Home</Nav.Link>
             </Link>
-            <Link href="/login" passHref>
-              <Nav.Link href="/login">Login</Nav.Link>
-            </Link>
+            {auth ?
+              <>
+                <Link href="/dashboard" passHref>
+                  <Nav.Link href="/dashboard">Dashboard</Nav.Link>
+                </Link>
+                <Nav.Link href="#" onClick={handleLogout}>Logout</Nav.Link>
+              </>
+              :
+              <Link href="/login" passHref>
+                <Nav.Link href="/login">Login</Nav.Link>
+              </Link>
+            }
           </Nav>
         </Navbar.Collapse>
       </Container>
-    </Navbar>
+    </Navbar >
   )
 }
+
+const mapStateToProps = (state) => {
+  return {
+    auth: state.auth
+  }
+}
+
+export default connect(mapStateToProps)(NavBar);

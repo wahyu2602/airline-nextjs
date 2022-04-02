@@ -9,11 +9,13 @@ export default async function handler(req, res) {
     const response = await fetchData.json();
     const data = response;
     res.status(200).json(data);
+    res.end();
   } else {
     const error = [{
       error: true,
       message: 'No Data!'
     }]
     res.status(500).json(error);
+    res.end();
   }
 }

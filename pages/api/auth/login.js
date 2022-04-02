@@ -1,4 +1,5 @@
 const baseUrl = process.env.BASE_URL;
+import { serialize } from 'cookie'
 
 export default async function handler(req, res) {
   const header = req.headers
@@ -22,11 +23,13 @@ export default async function handler(req, res) {
     const response = await fetchData.json();
     const data = response;
     res.status(200).json(data);
+    res.end();
   } else {
     const error = [{
       error: true,
       message: 'No Data!'
     }]
     res.status(500).json(error);
+    res.end();
   }
 }
