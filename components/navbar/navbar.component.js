@@ -10,9 +10,12 @@ function NavBar({ auth }) {
 
   const handleLogout = (e) => {
     e.preventDefault();
-    logoutAuth().then((res) => {
-      route.push('/');
-    });
+    logoutAuth()
+      .then((res) => {
+        if (!res.error) {
+          route.push('/');
+        }
+      });
   }
 
   return (
