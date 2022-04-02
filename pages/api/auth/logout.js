@@ -2,9 +2,8 @@ const baseUrl = process.env.BASE_URL;
 
 export default async function handler(req, res) {
   const header = req.headers
-  const cookie = header.cookie
 
-  if (cookie !== undefined && req.method == 'GET') {
+  if (req.method == 'GET') {
     res.setHeader('Set-Cookie', 'Bearer=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT');
     const data = {
       error: false,
