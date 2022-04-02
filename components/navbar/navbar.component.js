@@ -13,6 +13,7 @@ function NavBar({ auth }) {
     logoutAuth()
       .then((res) => {
         if (!res.error) {
+          document.cookie = `Bearer=; path='/; expires=Thu, 01 Jan 1970 00:00:01 GMT`;
           route.push('/');
         }
       });
