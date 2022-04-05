@@ -1,10 +1,23 @@
-import { getPassengerId } from '../../lib/services/passenger';
+// import { getPassengerId } from '../../lib/services/passenger';
 import Layout from '../../components/layout/layout.component';
-import { Container, Card, Row, Col, ListGroup, ListGroupItem } from 'react-bootstrap';
+import ModalForm from '../../components/modal/modal.component';
+import { Container, Card, Row, Col, ListGroup, ListGroupItem, Button } from 'react-bootstrap';
 import Link from 'next/link';
 import { connect } from 'react-redux';
+// import { useState } from 'react';
+import { deletePassengerId } from '../../lib/services/passenger';
+import { showModalDispatch, deletePassengerIdDispatch } from '../../lib/redux/dispatch';
+import { useRouter } from 'next/router';
 
-function Details({ passenger }) {
+function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch }) {
+  const route = useRouter();
+  const handleDeleteId = () => {
+    deletePassengerId(passenger._id)
+      .then((res) => {
+        deletePassengerIdDispatch(passenger._id);
+        route.push('/');
+      })
+  }
   if (passenger == null) {
     return (
       <Layout>
@@ -16,14 +29,16 @@ function Details({ passenger }) {
   } else {
     return (
       <Layout title="DETAILS">
-        <Container>
+        <Container className="my-5">
           <Link href="/">
-            <a className="btn btn-secondary mt-3">Back</a>
+            <a className="btn btn-sm btn-secondary mt-3">Back</a>
           </Link>
-          <Card className="my-5">
+          <Card className="my-4">
             <Card.Body>
               <Card.Text>Name : {passenger.name}</Card.Text>
               <Card.Text>Trips : {passenger.trips}</Card.Text>
+              <hr />
+              <Card.Text className="fw-bold">AIRLINE</Card.Text>
             </Card.Body>
             <Row>
               {passenger.airline.map(people =>
@@ -45,7 +60,14 @@ function Details({ passenger }) {
               )}
             </Row>
           </Card>
+          {auth &&
+            <div>
+              <Button className="me-3" onClick={() => showModalDispatch(true)}>Update</Button>
+              <Button variant="danger" onClick={handleDeleteId}>Delete</Button>
+            </div>
+          }
         </Container>
+        <ModalForm />
       </Layout>
     )
   }
@@ -53,8 +75,16 @@ function Details({ passenger }) {
 
 const mapStateToProps = (state) => {
   return {
-    passenger: state.passenger
+    passenger: state.passenger,
+    auth: state.auth
   }
 }
 
-export default connect(mapStateToProps)(Details);
+const mapDispatchToProps = (Dispatch) => {
+  return {
+    showModalDispatch: (bolean) => Dispatch(showModalDispatch(bolean)),
+    deletePassengerIdDispatch: (id) => Dispatch(deletePassengerIdDispatch(id))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Details);
