@@ -16,6 +16,7 @@ function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch
       .then((res) => {
         deletePassengerIdDispatch(passenger._id);
         route.push('/');
+        console.log(res);
       })
   }
   if (passenger == null) {
