@@ -1,12 +1,12 @@
 import { Navbar, Container, Nav } from "react-bootstrap";
 import Link from "next/link";
 // import { logoutAuth } from '../../lib/auth';
-// import { useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import { connect } from 'react-redux';
 
 
 function NavBar({ auth }) {
-  // const route = useRouter();
+  const route = useRouter();
 
   // const handleLogout = (e) => {
   //   e.preventDefault();
@@ -31,17 +31,17 @@ function NavBar({ auth }) {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
             <Link href="/" passHref>
-              <Nav.Link href="/">Home</Nav.Link>
+              <Nav.Link className={route.pathname === '/' && 'active'} href="/">Home</Nav.Link>
             </Link>
             {auth ?
               <>
                 <Link href="/dashboard" passHref>
-                  <Nav.Link href="/dashboard">Dashboard</Nav.Link>
+                  <Nav.Link className={route.pathname === '/dashboard' && 'active'} href="/dashboard">Dashboard</Nav.Link>
                 </Link>
               </>
               :
               <Link href="/login" passHref>
-                <Nav.Link href="/login">Login</Nav.Link>
+                <Nav.Link className={route.pathname === '/login' && 'active'} href="/login">Login</Nav.Link>
               </Link>
             }
           </Nav>
