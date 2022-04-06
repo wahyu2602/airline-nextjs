@@ -6,10 +6,13 @@ import Link from 'next/link';
 import { connect } from 'react-redux';
 // import { useState } from 'react';
 import { deletePassengerId } from '../../lib/services/passenger';
+import { getAitLines } from '../../lib/services/airlines';
 import { showModalDispatch, deletePassengerIdDispatch } from '../../lib/redux/dispatch';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch }) {
+  const [dataAirLines, setDataAirLines] = useState(null);
   const route = useRouter();
   const handleDeleteId = () => {
     deletePassengerId(passenger._id)
@@ -19,6 +22,15 @@ function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch
         console.log(res);
       })
   }
+
+  const handleUpdate = () => {
+    showModalDispatch(true)
+    getAitLines().then(res => {
+      const items = res.data.slice(0, 10);
+      setDataAirLines(items);
+    })
+  }
+
   if (passenger == null) {
     return (
       <Layout>
@@ -63,12 +75,12 @@ function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch
           </Card>
           {auth &&
             <div>
-              <Button className="me-3" onClick={() => showModalDispatch(true)}>Update</Button>
+              <Button className="me-3" onClick={handleUpdate}>Update</Button>
               <Button variant="danger" onClick={handleDeleteId}>Delete</Button>
             </div>
           }
         </Container>
-        <ModalForm />
+        <ModalForm data={dataAirLines} />
       </Layout>
     )
   }
