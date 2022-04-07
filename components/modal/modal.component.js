@@ -1,10 +1,14 @@
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { Button, Modal, Form, Spinner } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { showModalDispatch } from '../../lib/redux/dispatch';
+import { showModalDispatch, submitUpdateDispatch } from '../../lib/redux/dispatch';
 import { updatePassengerId } from '../../lib/services/passenger';
 
-function ModalForm({ showModalDispatch, show, passenger, data }) {
+function ModalForm({ showModalDispatch, show, passenger, data, submitUpdateDispatch }) {
+
+  const route = useRouter();
+
   const [formData, setFormData] = useState({
     name: passenger.name,
     trips: passenger.trips,
@@ -26,8 +30,10 @@ function ModalForm({ showModalDispatch, show, passenger, data }) {
     updatePassengerId(passenger._id, formData)
       .then(res => {
         console.log(res);
+        submitUpdateDispatch(true);
         showModalDispatch(false);
         setProcessSubmit(false);
+        route.push('/');
       })
 
     // console.log(formData);
@@ -111,7 +117,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (Dispatch) => {
   return {
-    showModalDispatch: (bolean) => Dispatch(showModalDispatch(bolean))
+    showModalDispatch: (bolean) => Dispatch(showModalDispatch(bolean)),
+    submitUpdateDispatch: (bolean) => Dispatch(submitUpdateDispatch(bolean))
   }
 }
 

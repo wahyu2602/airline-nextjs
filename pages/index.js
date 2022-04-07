@@ -2,14 +2,14 @@ import Layout from "../components/layout/layout.component"
 import { Container, Col, Row, Table, Form, Button, Spinner, InputGroup, FormControl } from "react-bootstrap"
 // import { axios } from "../lib/axios/axios";
 import { useEffect, useState } from 'react'
-import { getPagePassenger, getPassengers } from '../lib/services/passenger'
+import { getPagePassenger, getPassengers, deletePassengerId } from '../lib/services/passenger'
 import Link from "next/link";
 import { connect } from "react-redux";
-import { getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, getPageSizeDispatch, setConditionStaticDispatch, filterPassengersDispatch, statusLoginDispatch } from '../lib/redux/dispatch'
+import { getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, getPageSizeDispatch, setConditionStaticDispatch, filterPassengersDispatch, statusLoginDispatch, submitUpdateDispatch } from '../lib/redux/dispatch'
 import cookies from "next-cookies";
 
 
-function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, setTotalPages, getPageSizeDispatch, setPageSize, setConditionStaticDispatch, conditionStatic, filterPassengersDispatch, filterPassengers, statusLoginDispatch }) {
+function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, setTotalPages, getPageSizeDispatch, setPageSize, setConditionStaticDispatch, conditionStatic, filterPassengersDispatch, filterPassengers, statusLoginDispatch, submitUpdate, submitUpdateDispatch, auth }) {
   const [buttonProcess, setButtonProcess] = useState(false);
   const [pagination, setPanigation] = useState({
     page: 0,
@@ -35,7 +35,23 @@ function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPage
     } else {
       statusLoginDispatch(true);
     }
-  }, [cookie, statusLoginDispatch, conditionStatic, passenger, setPageSize, getPassengersDispatch, getAllPagesDispatch, setPanigation]);
+
+    if (submitUpdate) {
+      if (setPageSize.page == null || setPageSize.size == null) {
+        getPagePassenger(pagination.page, pagination.size)
+          .then(res => {
+            getPassengersDispatch(res.data);
+            submitUpdateDispatch(false);
+          })
+      } else {
+        getPagePassenger(setPageSize.page, setPageSize.size)
+          .then(res => {
+            getPassengersDispatch(res.data);
+            submitUpdateDispatch(false);
+          })
+      }
+    }
+  }, [cookie, statusLoginDispatch, conditionStatic, passenger, setPageSize, getPassengersDispatch, getAllPagesDispatch, setPanigation, submitUpdate, submitUpdateDispatch, pagination]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,6 +87,14 @@ function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPage
     } else {
       filterPassengersDispatch(e.target.value, true);
     }
+  }
+
+  const handleDeleteId = (e) => {
+    const id = e.target.dataset.id
+    deletePassengerId(id)
+      .then(res => {
+        submitUpdateDispatch(true);
+      })
   }
 
   return (
@@ -162,6 +186,9 @@ function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPage
                             <Link href="/passenger/details">
                               <a className="btn btn-primary btn-sm" onClick={(e) => getPassengerIdDispatch(item._id)}>Details</a>
                             </Link>
+                            {auth &&
+                              <Button variant="danger" data-id={item._id} className="btn-sm ms-3" onClick={handleDeleteId}>Delete</Button>
+                            }
                           </td>
                         </tr>
                       )
@@ -177,6 +204,9 @@ function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPage
                           <Link href="/passenger/details">
                             <a className="btn btn-primary btn-sm" onClick={(e) => getPassengerIdDispatch(item._id)}>Details</a>
                           </Link>
+                          {auth &&
+                            <Button variant="danger" data-id={item._id} className="btn-sm ms-3" onClick={handleDeleteId}>Delete</Button>
+                          }
                         </td>
                       </tr>
                     )
@@ -203,6 +233,8 @@ const mapStateToProps = (state) => {
     setPageSize: state.setPageSize,
     conditionStatic: state.conditionStatic,
     filterPassengers: state.filterPassengers,
+    submitUpdate: state.submitUpdate,
+    auth: state.auth
   }
 }
 
@@ -214,7 +246,8 @@ const mapDispatchToProps = (dispatch) => {
     getPageSizeDispatch: (page, size) => dispatch(getPageSizeDispatch(page, size)),
     setConditionStaticDispatch: (bolean) => dispatch(setConditionStaticDispatch(bolean)),
     filterPassengersDispatch: (name, bolean) => dispatch(filterPassengersDispatch(name, bolean)),
-    statusLoginDispatch: (bolean) => dispatch(statusLoginDispatch(bolean))
+    statusLoginDispatch: (bolean) => dispatch(statusLoginDispatch(bolean)),
+    submitUpdateDispatch: (bolean) => dispatch(submitUpdateDispatch(bolean))
   }
 }
 

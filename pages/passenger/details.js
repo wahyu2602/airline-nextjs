@@ -7,17 +7,18 @@ import { connect } from 'react-redux';
 // import { useState } from 'react';
 import { deletePassengerId } from '../../lib/services/passenger';
 import { getAitLines } from '../../lib/services/airlines';
-import { showModalDispatch, deletePassengerIdDispatch } from '../../lib/redux/dispatch';
+import { showModalDispatch, deletePassengerIdDispatch, submitUpdateDispatch } from '../../lib/redux/dispatch';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch }) {
+function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch, submitUpdateDispatch }) {
   const [dataAirLines, setDataAirLines] = useState(null);
   const route = useRouter();
   const handleDeleteId = () => {
     deletePassengerId(passenger._id)
       .then((res) => {
-        deletePassengerIdDispatch(passenger._id);
+        // deletePassengerIdDispatch(passenger._id);
+        submitUpdateDispatch(true);
         route.push('/');
         console.log(res);
       })
@@ -96,7 +97,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (Dispatch) => {
   return {
     showModalDispatch: (bolean) => Dispatch(showModalDispatch(bolean)),
-    deletePassengerIdDispatch: (id) => Dispatch(deletePassengerIdDispatch(id))
+    deletePassengerIdDispatch: (id) => Dispatch(deletePassengerIdDispatch(id)),
+    submitUpdateDispatch: (bolean) => Dispatch(submitUpdateDispatch(bolean))
   }
 }
 

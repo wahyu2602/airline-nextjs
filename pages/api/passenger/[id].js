@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     const response = await fetchData.json();
     const data = response;
     res.status(200).json(data);
-  } else if (tokenName == `${baseUrl}passenger/details` && cookie !== undefined && req.method == 'DELETE') {
+  } else if (tokenName == `${baseUrl}passenger/details` || tokenName == baseUrl && cookie !== undefined && req.method == 'DELETE') {
     const fetchData = await fetch(`https://api.instantwebtools.net/v1/passenger/${id}`, {
       method: req.method
     });
