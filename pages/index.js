@@ -100,7 +100,7 @@ function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPage
 
   const handleSortNewData = () => {
     setBtnSortNew(true)
-    getPagePassenger(setTotalPages.totalPages, pagination.size)
+    getPagePassenger(setTotalPages.totalPages, 10)
       .then((res) => {
         getPassengersDispatch(res.data);
         setConditionStaticDispatch(true);
