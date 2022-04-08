@@ -51,7 +51,7 @@ function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPage
           })
       }
     }
-  }, [cookie, statusLoginDispatch, conditionStatic, passenger, setPageSize, getPassengersDispatch, getAllPagesDispatch, setPanigation, submitUpdate, submitUpdateDispatch, pagination]);
+  }, [cookie, statusLoginDispatch, conditionStatic, passenger, setPageSize, getPassengersDispatch, getAllPagesDispatch, submitUpdate, submitUpdateDispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

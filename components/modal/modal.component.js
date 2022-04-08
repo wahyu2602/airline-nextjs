@@ -24,12 +24,12 @@ function ModalForm({ showModalDispatch, show, passenger, submitUpdateDispatch, a
     }));
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setProcessSubmit(true);
-    updatePassengerId(passenger._id, formData)
+    await updatePassengerId(passenger._id, formData)
       .then(res => {
-        console.log(res);
+        // console.log(res);
         submitUpdateDispatch(true);
         showModalDispatch(false);
         setProcessSubmit(false);

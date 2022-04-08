@@ -23,7 +23,7 @@ function DashboarHome({ cookie, statusLoginDispatch, getAirLineDispatch, airline
           })
       }
     }
-  }, [cookie, statusLoginDispatch, getAirLines, getAirLineDispatch, airlines]);
+  }, [cookie, statusLoginDispatch, getAirLineDispatch, airlines]);
 
   const route = useRouter();
 
