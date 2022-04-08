@@ -6,13 +6,13 @@ import Link from 'next/link';
 import { connect } from 'react-redux';
 // import { useState } from 'react';
 import { deletePassengerId } from '../../lib/services/passenger';
-import { getAitLines } from '../../lib/services/airlines';
-import { showModalDispatch, deletePassengerIdDispatch, submitUpdateDispatch } from '../../lib/redux/dispatch';
+import { getAirLines } from '../../lib/services/airlines';
+import { showModalDispatch, deletePassengerIdDispatch, submitUpdateDispatch, getAirLineDispatch } from '../../lib/redux/dispatch';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch, submitUpdateDispatch }) {
-  const [dataAirLines, setDataAirLines] = useState(null);
+function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch, submitUpdateDispatch, getAirLineDispatch, airlines }) {
+  // const [dataAirLines, setDataAirLines] = useState(null);
   const route = useRouter();
   const handleDeleteId = () => {
     deletePassengerId(passenger._id)
@@ -26,10 +26,12 @@ function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch
 
   const handleUpdate = () => {
     showModalDispatch(true)
-    getAitLines().then(res => {
-      const items = res.data.slice(0, 10);
-      setDataAirLines(items);
-    })
+    if (airlines.length == 0) {
+      getAirLines().then(res => {
+        const items = res.data.slice(0, 10);
+        getAirLineDispatch(items);
+      })
+    }
   }
 
   if (passenger == null) {
@@ -81,7 +83,7 @@ function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch
             </div>
           }
         </Container>
-        <ModalForm data={dataAirLines} />
+        <ModalForm />
       </Layout>
     )
   }
@@ -90,7 +92,8 @@ function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch
 const mapStateToProps = (state) => {
   return {
     passenger: state.passenger,
-    auth: state.auth
+    auth: state.auth,
+    airlines: state.airlines
   }
 }
 
@@ -98,7 +101,8 @@ const mapDispatchToProps = (Dispatch) => {
   return {
     showModalDispatch: (bolean) => Dispatch(showModalDispatch(bolean)),
     deletePassengerIdDispatch: (id) => Dispatch(deletePassengerIdDispatch(id)),
-    submitUpdateDispatch: (bolean) => Dispatch(submitUpdateDispatch(bolean))
+    submitUpdateDispatch: (bolean) => Dispatch(submitUpdateDispatch(bolean)),
+    getAirLineDispatch: (airlines) => Dispatch(getAirLineDispatch(airlines))
   }
 }
 

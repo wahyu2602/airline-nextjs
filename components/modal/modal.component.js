@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { showModalDispatch, submitUpdateDispatch } from '../../lib/redux/dispatch';
 import { updatePassengerId } from '../../lib/services/passenger';
 
-function ModalForm({ showModalDispatch, show, passenger, data, submitUpdateDispatch }) {
+function ModalForm({ showModalDispatch, show, passenger, submitUpdateDispatch, airlines }) {
 
   const route = useRouter();
 
@@ -69,15 +69,13 @@ function ModalForm({ showModalDispatch, show, passenger, data, submitUpdateDispa
             </Form.Group>
             <Form.Group className="mb-3" controlId="exampleForm.ControlInput3">
               <Form.Label>AirLines</Form.Label>
-              {data === null &&
+              {airlines.length == 0 &&
                 <Spinner animation="border" variant="warning" size="sm" />
               }
               <Form.Select name="airline" aria-label="Default select example" onChange={hendleOnChangeValue}>
-                {data !== null &&
-                  data.map(airline =>
-                    <option key={airline.id} value={airline.id}>{airline.name}</option>
-                  )
-                }
+                {airlines.map(airline =>
+                  <option key={airline.id} value={airline.id}>{airline.name}</option>
+                )}
               </Form.Select>
             </Form.Group>
             <Modal.Footer>
@@ -85,7 +83,7 @@ function ModalForm({ showModalDispatch, show, passenger, data, submitUpdateDispa
                 Close
               </Button>
               {processSubmit ?
-                <Button variant="primary" disabled>
+                <Button variant="success" disabled>
                   <Spinner
                     as="span"
                     animation="grow"
@@ -96,7 +94,7 @@ function ModalForm({ showModalDispatch, show, passenger, data, submitUpdateDispa
                   Loading...
                 </Button>
                 :
-                <Button type="submit" variant="primary">
+                <Button type="submit" variant="success">
                   Save Changes
                 </Button>
               }
@@ -111,7 +109,8 @@ function ModalForm({ showModalDispatch, show, passenger, data, submitUpdateDispa
 const mapStateToProps = (state) => {
   return {
     show: state.showModal,
-    passenger: state.passenger
+    passenger: state.passenger,
+    airlines: state.airlines
   }
 }
 
