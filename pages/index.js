@@ -11,6 +11,7 @@ import cookies from "next-cookies";
 
 function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, setTotalPages, getPageSizeDispatch, setPageSize, setConditionStaticDispatch, conditionStatic, filterPassengersDispatch, filterPassengers, statusLoginDispatch, submitUpdate, submitUpdateDispatch, auth }) {
   const [buttonProcess, setButtonProcess] = useState(false);
+  const [btnSortNew, setBtnSortNew] = useState(false);
   const [pagination, setPanigation] = useState({
     page: 0,
     size: 10
@@ -20,7 +21,7 @@ function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPage
     if (!conditionStatic && passenger === null) {
       getPassengers()
         .then((res) => {
-          getPassengersDispatch(res.data);
+          getPassengersDispatch(res.data.sort());
           getAllPagesDispatch(res.totalPassengers, res.totalPages - 1);
         });
     }
@@ -97,6 +98,16 @@ function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPage
       })
   }
 
+  const handleSortNewData = () => {
+    setBtnSortNew(true)
+    getPagePassenger(setTotalPages.totalPages, pagination.size)
+      .then((res) => {
+        getPassengersDispatch(res.data);
+        setConditionStaticDispatch(true);
+        setBtnSortNew(false);
+      });
+  }
+
   return (
     <>
       <Layout title="HOME">
@@ -135,7 +146,22 @@ function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPage
               }
             </Row>
           </Form>
-          <Col md={3}>
+          <hr />
+          {btnSortNew ?
+            <Button variant="secondary" disabled>
+              <Spinner
+                as="span"
+                animation="grow"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+              Loading...
+            </Button>
+            :
+            <Button onClick={handleSortNewData}>Sort New Data</Button>
+          }
+          <Col className="mt-3" md={3}>
             <InputGroup className="mb-3">
               <InputGroup.Text id="basic-addon1">Filter</InputGroup.Text>
               <FormControl
