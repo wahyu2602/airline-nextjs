@@ -22,9 +22,10 @@ function Login({ statusLoginDispatch }) {
     }));
   };
 
-  const handleSumbitLogin = (e) => {
+  const handleSubmitLogin = (e) => {
     e.preventDefault();
     loginAuth(formData).then((res) => {
+      console.log(res);
       document.cookie = `${res.token_type}=${res.access_token}; path=/; expires=${res.expires_in}`;
       route.push('/dashboard');
       statusLoginDispatch(true);
@@ -38,7 +39,7 @@ function Login({ statusLoginDispatch }) {
           <Col md={5}>
             <h3 className="mb-2 text-center">Login</h3>
             <hr />
-            <Form onSubmit={handleSumbitLogin}>
+            <Form onSubmit={handleSubmitLogin}>
               <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Label>User Name</Form.Label>
                 <Form.Control name="username" type="text" placeholder="User Name" onChange={handleChangeLogin} />

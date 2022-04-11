@@ -1,11 +1,13 @@
 const baseUrl = process.env.BASE_URL;
-import { serialize } from 'cookie'
+// import { serialize } from 'cookie'
 
 export default async function handler(req, res) {
   const header = req.headers
   const tokenName = header.origin
 
-  if (`${tokenName}/` == baseUrl && req.method == 'POST') {
+  console.log(req);
+
+  if (req.method == 'POST' && `${tokenName}/` == baseUrl) {
     const fetchData = await fetch("https://dev-457931.okta.com/oauth2/aushd4c95QtFHsfWt4x6/v1/token", {
       method: req.method,
       credentials: 'include',
@@ -13,11 +15,11 @@ export default async function handler(req, res) {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: new URLSearchParams({
-        client_id: '0oahdhjkutaGcIK2M4x6',
+        scope: 'offline_access',
+        grant_type: 'password',
         username: req.query.username,
         password: req.query.password,
-        grant_type: 'password',
-        scope: 'offline_access'
+        client_id: '0oahdhjkutaGcIK2M4x6',
       })
     });
     const response = await fetchData.json();
