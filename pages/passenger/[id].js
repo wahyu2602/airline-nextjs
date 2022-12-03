@@ -7,14 +7,16 @@ import { connect } from 'react-redux';
 // import { useState } from 'react';
 import { deletePassengerId, getPassengerId } from '../../lib/services/passenger';
 import { getAirLines } from '../../lib/services/airlines';
-import { showModalDispatch, deletePassengerIdDispatch, submitUpdateDispatch, getAirLineDispatch, statusLoginDispatch } from '../../lib/redux/dispatch';
+import { showModalDispatch, deletePassengerIdDispatch, submitUpdateDispatch, getAirLineDispatch, statusLoginDispatch, getPassengerIdDispatch } from '../../lib/redux/dispatch';
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 import cookies from "next-cookies";
 
-function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch, submitUpdateDispatch, getAirLineDispatch, airlines, statusLoginDispatch, cookie }) {
+function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch, submitUpdateDispatch, getAirLineDispatch, airlines, statusLoginDispatch, cookie, getPassengerIdDispatch }) {
   // const [dataAirLines, setDataAirLines] = useState(null);
   const route = useRouter();
+  const { id } = route.query;
+
   const handleDeleteId = () => {
     deletePassengerId(passenger._id)
       .then((res) => {
@@ -42,16 +44,21 @@ function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch
       statusLoginDispatch(true);
     }
 
-    // getPassengerId();
+    getPassengerId(id).then(res => {
+      getPassengerIdDispatch(res);
+    });
 
-
-  }, [cookie, statusLoginDispatch])
+  }, [cookie, statusLoginDispatch, getPassengerId, getPassengerIdDispatch])
 
   if (passenger == null) {
     return (
       <Layout>
         <Container>
-          <h1 className="text-center mt-5">No Data!</h1>
+          <div className="d-flex justify-content-center align-items-center h-full">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
         </Container>
       </Layout>
     )
@@ -121,7 +128,8 @@ const mapDispatchToProps = (Dispatch) => {
     deletePassengerIdDispatch: (id) => Dispatch(deletePassengerIdDispatch(id)),
     submitUpdateDispatch: (bolean) => Dispatch(submitUpdateDispatch(bolean)),
     getAirLineDispatch: (airlines) => Dispatch(getAirLineDispatch(airlines)),
-    statusLoginDispatch: (bolean) => Dispatch(statusLoginDispatch(bolean))
+    statusLoginDispatch: (bolean) => Dispatch(statusLoginDispatch(bolean)),
+    getPassengerIdDispatch: (id) => Dispatch(getPassengerIdDispatch(id))
   }
 }
 

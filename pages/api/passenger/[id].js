@@ -6,24 +6,25 @@ export default async function handler(req, res) {
   const header = req.headers;
   const tokenName = header.referer;
   const cookie = header.cookie;
-  // res.setHeader('Allow', ['GET', 'POST', 'DELETE', 'PUT']);
+  res.setHeader('Allow', ['GET', 'POST', 'DELETE', 'PUT']);
 
-  // console.log(req.method);
+  console.log(req.method);
 
-  if (req.method === 'GET' && tokenName == baseUrl) {
+  if (req.method === 'GET' && tokenName == `${baseUrl}passenger/${id}` || tokenName == baseUrl) {
     const passengerByID = await fetch(`https://api.instantwebtools.net/v1/passenger/${id}`);
     const resPassengerByID = await passengerByID.json();
     const dataPassengerByID = resPassengerByID;
     res.status(200).json(dataPassengerByID);
-  } else if (req.method === 'DELETE' && tokenName == `${baseUrl}passenger/details` || tokenName == baseUrl && cookie !== undefined) {
+  } else if (req.method === 'DELETE' && tokenName == baseUrl || tokenName == `${baseUrl}passenger/${id}` && cookie !== undefined) {
     const fetchDataDelete = await fetch(`https://api.instantwebtools.net/v1/passenger/${id}`, {
       method: req.method
     });
     const responseDelete = await fetchDataDelete.json();
     const dataDelete = responseDelete;
+    console.log(dataDelete);
     res.status(200).json(dataDelete);
     res.end();
-  } else if (req.method === 'PUT' && cookie !== undefined && tokenName == `${baseUrl}passenger/details`) {
+  } else if (req.method == 'PUT' && cookie !== undefined && tokenName == `${baseUrl}passenger/details`) {
     const fetchDataPut = await fetch(`https://api.instantwebtools.net/v1/passenger/${id}`, {
       method: req.method,
       headers: {

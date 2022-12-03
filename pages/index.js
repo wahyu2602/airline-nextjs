@@ -5,11 +5,11 @@ import { useEffect, useState } from 'react'
 import { getPagePassenger, getPassengers, deletePassengerId } from '../lib/services/passenger'
 import Link from "next/link";
 import { connect } from "react-redux";
-import { getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, getPageSizeDispatch, setConditionStaticDispatch, filterPassengersDispatch, statusLoginDispatch, submitUpdateDispatch } from '../lib/redux/dispatch'
+import { getPassengersDispatch, getAllPagesDispatch, getPageSizeDispatch, setConditionStaticDispatch, filterPassengersDispatch, statusLoginDispatch, submitUpdateDispatch } from '../lib/redux/dispatch'
 import cookies from "next-cookies";
 
 
-function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPagesDispatch, getPassengerIdDispatch, setTotalPages, getPageSizeDispatch, setPageSize, setConditionStaticDispatch, conditionStatic, filterPassengersDispatch, filterPassengers, statusLoginDispatch, submitUpdate, submitUpdateDispatch, auth }) {
+function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPagesDispatch, setTotalPages, getPageSizeDispatch, setPageSize, setConditionStaticDispatch, conditionStatic, filterPassengersDispatch, filterPassengers, statusLoginDispatch, submitUpdate, submitUpdateDispatch, auth }) {
   const [buttonProcess, setButtonProcess] = useState(false);
   const [btnSortNew, setBtnSortNew] = useState(false);
   const [pagination, setPanigation] = useState({
@@ -18,7 +18,7 @@ function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPage
   });
 
   useEffect(() => {
-    if (!conditionStatic && passenger === null) {
+    if (!conditionStatic && passengers === null || passengers.length === 0) {
       getPassengers()
         .then((res) => {
           getPassengersDispatch(res.data.sort());
@@ -209,8 +209,8 @@ function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPage
                           <td>{item.name}</td>
                           <td>{item.trips}</td>
                           <td>
-                            <Link href="/passenger/details">
-                              <a className="btn btn-primary btn-sm" onClick={(e) => getPassengerIdDispatch(item._id)}>Details</a>
+                            <Link href={`/passenger/${item._id}`}>
+                              <a className="btn btn-primary btn-sm">Details</a>
                             </Link>
                             {auth &&
                               <Button variant="danger" data-id={item._id} className="btn-sm ms-3" onClick={handleDeleteId}>Delete</Button>
@@ -227,8 +227,8 @@ function Home({ cookie, passengers, passenger, getPassengersDispatch, getAllPage
                         <td>{item.name}</td>
                         <td>{item.trips}</td>
                         <td>
-                          <Link href="/passenger/details">
-                            <a className="btn btn-primary btn-sm" onClick={(e) => getPassengerIdDispatch(item._id)}>Details</a>
+                          <Link href={`/passenger/${item._id}`}>
+                            <a className="btn btn-primary btn-sm" >Details</a>
                           </Link>
                           {auth &&
                             <Button variant="danger" data-id={item._id} className="btn-sm ms-3" onClick={handleDeleteId}>Delete</Button>
@@ -268,7 +268,6 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getPassengersDispatch: (passengers) => dispatch(getPassengersDispatch(passengers)),
     getAllPagesDispatch: (totalPassengers, totalPages) => dispatch(getAllPagesDispatch(totalPassengers, totalPages)),
-    getPassengerIdDispatch: (id) => dispatch(getPassengerIdDispatch(id)),
     getPageSizeDispatch: (page, size) => dispatch(getPageSizeDispatch(page, size)),
     setConditionStaticDispatch: (bolean) => dispatch(setConditionStaticDispatch(bolean)),
     filterPassengersDispatch: (name, bolean) => dispatch(filterPassengersDispatch(name, bolean)),
