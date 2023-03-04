@@ -65,7 +65,7 @@ function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch
   } else {
     return (
       <Layout title="DETAILS">
-        <Container className="my-5">
+        <Container key={passenger} className="my-5">
           <Link href="/">
             <a className="btn btn-sm btn-secondary mt-3">Back</a>
           </Link>
@@ -78,7 +78,7 @@ function Details({ passenger, auth, showModalDispatch, deletePassengerIdDispatch
             </Card.Body>
             <Row>
               {passenger.airline.map(people =>
-                <Col key={people._id} md={4}>
+                <Col key={people.id} md={4}>
                   <Card>
                     <Card.Img variant="top" src={people.logo} alt={people.name} />
                     <Card.Body>
